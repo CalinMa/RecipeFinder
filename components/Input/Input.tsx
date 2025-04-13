@@ -22,7 +22,8 @@ const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch,
           paddingRight: 40,
           borderColor: '#D1D5DB',
           borderWidth: 1,
-          borderRadius: 8,
+          borderRadius: 16,
+          gap: 10
         }}
         onSubmitEditing={onSearch}
       />
