@@ -75,21 +75,25 @@ export default function HomeScreen() {
     setInputText(text);
   }, []);
 
-  const [dislikedSuggestions, setDislikedSuggestions] = useState<string[]>([]); // Stare pentru sugestii nelăcute
+  const [dislikedSuggestions, setDislikedSuggestions] = useState<string[]>([]);
 
+  const handleClear = useCallback(() => {
+    setSuggestedRecipes([]);
+    handleChangeText('')
+  }, [])
   const handleSearch = useCallback(async () => {
     setLoading(true);
     setSuggestedRecipes([]);
     setError(null);
-    console.log('Pushed search with:', inputText, 'Disliked:', dislikedSuggestions);
+    // console.log('Pushed search with:', inputText, 'Disliked:', dislikedSuggestions);
 
     if (inputText.length > 0) {
       const prompt = `Please generate 5 recipe titles for ${inputText}. Each title must be a maximum of 25 characters long.
       The response should include a list of recipes with title and preparation time, Ingredients, and Instructions, and be in the format 1.'....', time: 15 min, Ingredients: ...., Instructions: ....
-      Avoid generating recipes with the following titles: ${dislikedSuggestions.join(', ')}`;
+      Avoid generating recipes with the following titles: ${dislikedSuggestions.join(', ')}. Even in case of long preparation time, respond in minutes, never in other formats such as hours.`;
       try {
         const apiResponse = await fetchChatGPTResponse(prompt);
-        console.log('GPT Response:', apiResponse);
+        // console.log('GPT Response:', apiResponse);
         const parsedRecipes = parseGptResponse(apiResponse);
         setSuggestedRecipes(parsedRecipes);
       } catch (err) {
@@ -146,6 +150,8 @@ export default function HomeScreen() {
         onChangeText={handleChangeText}
         placeholder="What do you feel like eating?"
         onSearch={handleSearch}
+        onClear={handleClear}
+        suggested={suggestedRecipes.length > 0}
       />
 
       {loading && <ActivityIndicator size="large" color="#65558F" style={styles.loader} />}
@@ -153,7 +159,7 @@ export default function HomeScreen() {
       {error && <Text style={styles.error}>{error}</Text>}
     {/* favorites */}
       <ScrollView style={styles.suggestionsContainer}>
-        {favoriteRecipes.length > 0 && <Text style={styles.favoritesTitle}>Favorite Recipes</Text>}
+        {favoriteRecipes.length > 0 && <Text style={styles.favoritesTitle}>Favorites</Text>}
         {favoriteRecipes.map((favRecipe, index) => (
           <TouchableOpacity key={index} onPress={() => handleFavoritePress(favRecipe)}>
             <RecipeCard

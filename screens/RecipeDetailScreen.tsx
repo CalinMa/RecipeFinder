@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { RecipeDetailScreenProps, RecipeDetail } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -9,7 +9,7 @@ const FAVORITES_STORAGE_KEY = 'favoriteRecipes';
 const RecipeDetailScreen: React.FC<RecipeDetailScreenProps> = ({ route }) => {
   const { title, time, ingredients, instructions } = route.params as RecipeDetail;
   const [isFavorite, setIsFavorite] = useState(false);
- 
+
   useEffect(() => {
     checkIfFavorite();
   }, [title]);
@@ -49,14 +49,21 @@ const RecipeDetailScreen: React.FC<RecipeDetailScreenProps> = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
-         <Image source={require('../assets/no-image.png')} style={styles.image}/>
+      <Image source={require('../assets/no-image.png')} style={styles.image}/>
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+          {time && <Text style={styles.timeUnderTitle}>{time}.</Text>}
+        </View>
         <TouchableOpacity onPress={toggleFavorite}>
-          <Icon name={isFavorite ? 'heart' : 'heart'} size={24} color={isFavorite ? '#65558F' : 'black'} />
+          <Icon
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={24}
+            color={isFavorite ? '#65558F' : 'black'}
+          />
         </TouchableOpacity>
       </View>
-      
+
       {ingredients && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Ingredients:</Text>
@@ -76,11 +83,17 @@ const RecipeDetailScreen: React.FC<RecipeDetailScreenProps> = ({ route }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', flex: 1, marginRight: 16 },
+  titleContainer: { flex: 1, marginRight: 16 }, // Container pentru titlu și timp
+  title: { fontSize: 24, fontWeight: 'bold' },
   section: { marginBottom: 16 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
   sectionText: { fontSize: 16, lineHeight: 24 },
-  image:{height: 400, width: 400}
+  image:{height: 400, width: 400},
+  timeUnderTitle: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 5,
+  },
 });
 
 export default RecipeDetailScreen;

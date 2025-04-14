@@ -6,13 +6,14 @@ interface InputProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-  onSearch: () => void
+  onSearch: () => void,
+  onClear: () => void,
+  suggested: boolean
 }
 
-const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch, onChangeText}) => {
-  console.log('randat')
+const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch, onChangeText, suggested, onClear}) => {
   return (
-    <View style={{ width: '100%', maxWidth: 400, padding: 8 }}>
+    <View style={{ width: '100%', maxWidth: 400, padding: 8}}>
        <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -23,8 +24,9 @@ const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch,
           backgroundColor: '#FFFFFF',
           borderColor:'#D9D9D9',
           borderWidth: 1,
-          borderRadius: 16,
-          gap: 10
+          borderRadius: 25,
+          gap: 10, 
+          color: '#B3B3B3'
         }}
         onSubmitEditing={onSearch}
       />
@@ -36,7 +38,10 @@ const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch,
           transform: [{ translateY: -10 }]
         }}
       >
-        <Icon name="search" size={20} color="#A1A1AA" onPress={onSearch} />
+        {suggested ? 
+        <Icon name="x" size={20} color="#1E1E1E" onPress={onClear}/>
+      : <Icon name="search" size={20} color="#1E1E1E" onPress={onSearch} />}
+        
       </View>
     </View>
   );

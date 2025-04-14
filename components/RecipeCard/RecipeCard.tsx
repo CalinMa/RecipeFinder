@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 interface RecipeCardProps {
   title: string;
@@ -17,10 +18,15 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, time, isFavorite, onTogg
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.time}>{time}</Text>
+        <Text style={styles.time}>{time}.</Text>
       </View>
       <TouchableOpacity onPress={onToggleFavorite}>
-        <Icon name={isFavorite ? 'heart' : 'heart'} size={24} color={isFavorite ? '#65558F' : 'black'} />
+      <Icon
+    name={isFavorite ? 'heart' : 'heart-outline'}
+    size={24}
+    color={isFavorite ? '#65558F' : 'black'}
+  />
+        
       </TouchableOpacity>
     </View>
   );
@@ -31,7 +37,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingLeft: 0,    
+    paddingRight: 16,
     paddingVertical: 0,
     marginVertical: 8,
     backgroundColor: '#E0E0E0',
@@ -59,13 +66,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
     backgroundColor: '#E0E0E0',
-    marginRight: 8, 
+    marginRight: 0, 
     justifyContent: 'center',
     alignItems: 'center',
   },
   imageStyle : {
-    width: '80%',
-    height: '80%',
+    width: '90%',
+    height: '90%',
     resizeMode: 'contain',
   }
 });
