@@ -20,7 +20,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, time, isFavorite, onTogg
         <Text style={styles.time}>{time}</Text>
       </View>
       <TouchableOpacity onPress={onToggleFavorite}>
-        <Icon name={isFavorite ? 'heart' : 'heart'} size={24} color={isFavorite ? '#65558F' : 'lightgrey'} />
+        <Icon name={isFavorite ? 'heart' : 'heart'} size={24} color={isFavorite ? '#65558F' : 'black'} />
       </TouchableOpacity>
     </View>
   );
@@ -37,10 +37,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0E0E0',
     borderRadius: 16,
     gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.25)',
+
   },
   textContainer: {
     flex: 1,

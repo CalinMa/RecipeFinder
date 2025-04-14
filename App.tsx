@@ -11,7 +11,7 @@ const Stack = createStackNavigator<RootStackParamList>(); //generic
 function AppNavigator() {
   return (
     <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Recipes' }} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Recipe Finder' }} />
       <Stack.Screen name="RecipeDetail" component={RecipeDetailScreen} options={{ title: 'Recipe Details' }} />
     </Stack.Navigator>
   );

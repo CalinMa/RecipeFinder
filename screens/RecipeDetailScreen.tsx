@@ -1,84 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { fetchChatGPTResponse } from '../services/api';
-import { RecipeDetailScreenProps } from '../navigation/types'; 
+import { RecipeDetailScreenProps, RecipeDetail } from '../navigation/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const RecipeDetailScreen: React.FC<RecipeDetailScreenProps> = ({ route }) => { 
-  const [recipeDetails, setRecipeDetails] = useState<{description?: string }>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const FAVORITES_STORAGE_KEY = 'favoriteRecipes';
 
-  const { title} = route.params; 
-
+const RecipeDetailScreen: React.FC<RecipeDetailScreenProps> = ({ route }) => {
+  const { title, time, ingredients, instructions } = route.params as RecipeDetail;
+  const [isFavorite, setIsFavorite] = useState(false);
+ 
   useEffect(() => {
-    const fetchRecipeDetails = async () => {
-      setLoading(true);
-      setError(null);
-      const prompt = `Te rog să-mi dai detalii despre rețeta "${title}". Raspunsul va fi impartit in: Ingredients: ...., Instructions: ...."`;
-      try {
-        const apiResponse = await fetchChatGPTResponse(prompt);
-        
-        console.log(apiResponse)
-        setRecipeDetails({ description: apiResponse });
-      } catch (err) {
-        console.error('Error fetching recipe details:', err);
-        setError('Eroare la încărcarea detaliilor rețetei.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecipeDetails();
+    checkIfFavorite();
   }, [title]);
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#65558F"/>
-      </View>
-    );
-  }
+  const checkIfFavorite = async () => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (storedFavorites) {
+        const favorites = JSON.parse(storedFavorites) as RecipeDetail[];
+        setIsFavorite(favorites.some(fav => fav.title === title));
+      }
+    } catch (error) {
+      console.error('Eroare la verificarea favoritelor:', error);
+    }
+  };
 
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.error}>{error}</Text>
-      </View>
-    );
-  }
+  const toggleFavorite = useCallback(async () => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      let favorites = storedFavorites ? (JSON.parse(storedFavorites) as RecipeDetail[]) : [];
+
+      const isCurrentlyFavorite = favorites.some(fav => fav.title === title);
+
+      if (isCurrentlyFavorite) {
+        favorites = favorites.filter(fav => fav.title !== title);
+        setIsFavorite(false);
+      } else {
+        favorites.push({ title, time, ingredients, instructions });
+        setIsFavorite(true);
+      }
+
+      await AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    } catch (error) {
+      console.error('Eroare la gestionarea favoritelor:', error);
+    }
+  }, [title, time, ingredients, instructions]);
 
   return (
     <ScrollView style={styles.container}>
-            {recipeDetails && (
-        <Image
-          source={require('../assets/no-image.png')}
-          style={styles.image}
-        />
-      )}
+         <Image source={require('../assets/no-image.png')} style={styles.image}/>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
+        <TouchableOpacity onPress={toggleFavorite}>
+          <Icon name={isFavorite ? 'heart' : 'heart'} size={24} color={isFavorite ? '#65558F' : 'black'} />
+        </TouchableOpacity>
       </View>
-      {recipeDetails.description && (
-        <Text style={styles.description}>{recipeDetails.description}</Text>
+      
+      {ingredients && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Ingredients:</Text>
+          <Text style={styles.sectionText}>{ingredients}</Text>
+        </View>
+      )}
+      {instructions && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Instructions:</Text>
+          <Text style={styles.sectionText}>{instructions}</Text>
+        </View>
       )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  image: { width: '100%', height: 200, resizeMode: 'cover', marginBottom: 10 },
-  description: { fontSize: 16 },
-  error: { color: 'red' },
+  container: { flex: 1, padding: 16 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  title: { fontSize: 24, fontWeight: 'bold', flex: 1, marginRight: 16 },
+  section: { marginBottom: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
+  sectionText: { fontSize: 16, lineHeight: 24 },
+  image:{height: 400, width: 400}
 });
 
 export default RecipeDetailScreen;

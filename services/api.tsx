@@ -1,24 +1,5 @@
 import { OPENAI_API_KEY } from '@env';
 
-
-export const fetchRecipesFromAPI = async (description: string) => {
-    try {
-      const response = await fetch('https://api.exemplu.com/recipes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description }),
-      });
-      const data = await response.json();
-      return data.recipes; 
-    } catch (error) {
-      console.error("Error fetching recipes:", error);
-      return [];
-    }
-  };
-  
- 
   export const fetchChatGPTResponse = async (userMessage: string) => {
     const requestBody = {
       model: "gpt-3.5-turbo",

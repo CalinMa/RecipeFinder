@@ -20,7 +20,8 @@ const Input: React.FC<InputProps> = React.memo(({ value,  placeholder, onSearch,
         style={{
           padding: 12,
           paddingRight: 40,
-          borderColor: '#D1D5DB',
+          backgroundColor: '#FFFFFF',
+          borderColor:'#D9D9D9',
           borderWidth: 1,
           borderRadius: 16,
           gap: 10
